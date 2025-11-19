@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextjs
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nextjs
+  template:
+    metadata:
+      labels:
+        app: nextjs
+    spec:
+      containers:
+      - name: nextjs
+        image: local/nextjs-postgres-redis:dev
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 3000
+        env:
+          # Value from ConfigMap
+          - name: NODE_ENV
+            valueFrom:
+              configMapKeyRef:
+                name: app-config
+                key: NODE_ENV
+          # Statically defined values
+          - name: REDIS_URL
+            value: "redis://redis.demo.svc.cluster.local:6379"
+          # A composite value built from secrets.
+          # The secrets are available via envFrom below.
+          - name: DATABASE_URL
+            value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres.demo.svc.cluster.local:5432/$(POSTGRES_DB)"
+        envFrom:
+          - secretRef:
+              name: app-secret
+        readinessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
