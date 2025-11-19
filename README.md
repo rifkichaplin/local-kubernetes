@@ -2,6 +2,7 @@ Kind Kubernetes Deployment
 ===============================
 
 OS: ubuntu 24.04 LTS
+Stack: Ingress-Nginx, NextJS, Redis, Postgres
 
 kind installation:
 ------------------------
@@ -54,4 +55,7 @@ local-kubernetes/k8s/app$ docker build -t local/nextjs-postgres-redis:dev .
 kind load docker-image local/nextjs-postgres-redis:dev --name kind-next
 
 kubectl -n demo exec -it deploy/nextjs -- cat /app/runtime/env --> untuk lihat env
+
+<img width="1160" height="239" alt="image" src="https://github.com/user-attachments/assets/38810edb-237a-45e0-a238-1c09bbdaa1c3" />
+
 
